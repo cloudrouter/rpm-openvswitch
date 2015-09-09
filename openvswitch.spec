@@ -2,17 +2,15 @@
 
 Summary: Open vSwitch daemon/database/utilities
 Name: openvswitch
-Version: 2.3.2
+Version: 2.4.0
 Release: 1%{?dist}
 License: ASL 2.0 and LGPLv2+ and SISSL
 URL: http://openvswitch.org
 Source0: http://openvswitch.org/releases/%{name}-%{version}.tar.gz
 
-Patch1: openvswitch-runtimedir.patch
-
 ExcludeArch: ppc
 
-BuildRequires: autoconf
+BuildRequires: autoconf automake libtool
 BuildRequires: systemd-units openssl openssl-devel
 BuildRequires: python python-twisted-core python-zope-interface PyQt4
 BuildRequires: desktop-file-utils
@@ -63,7 +61,6 @@ files needed to build an external application.
 
 %prep
 %setup -q -n %{name}-%{version}
-%patch1 -p1
 
 %build
 %configure --enable-ssl --with-pkidir=%{_sharedstatedir}/openvswitch/pki
@@ -107,20 +104,6 @@ rmdir $RPM_BUILD_ROOT/%{_datadir}/openvswitch/python/
 
 install -d -m 0755 $RPM_BUILD_ROOT/%{_sharedstatedir}/openvswitch
 
-install -d -m 0755 $RPM_BUILD_ROOT%{_includedir}/openvswitch
-install -p -D -m 0644 include/openvswitch/*.h \
-        -t $RPM_BUILD_ROOT%{_includedir}/openvswitch
-install -p -D -m 0644 config.h \
-        -t $RPM_BUILD_ROOT%{_includedir}/openvswitch
-
-install -d -m 0755 $RPM_BUILD_ROOT%{_includedir}/openvswitch/lib
-install -p -D -m 0644 lib/*.h \
-        -t $RPM_BUILD_ROOT%{_includedir}/openvswitch/lib
-
-install -d -m 0755 $RPM_BUILD_ROOT%{_includedir}/openflow
-install -p -D -m 0644 include/openflow/*.h \
-        -t $RPM_BUILD_ROOT%{_includedir}/openflow
-
 touch $RPM_BUILD_ROOT%{_sysconfdir}/openvswitch/conf.db
 touch $RPM_BUILD_ROOT%{_sysconfdir}/openvswitch/system-id.conf
 
@@ -158,16 +141,6 @@ rm -rf $RPM_BUILD_ROOT
     fi
 %endif
 
-# Package with native systemd unit file is installed for the first time
-%triggerun -- %{name} < 1.9.0-1
-# Save the current service runlevel info
-# User must manually run systemd-sysv-convert --apply openvswitch
-# to migrate them to systemd targets
-/usr/bin/systemd-sysv-convert --save %{name} >/dev/null 2>&1 ||:
-
-# Run these because the SysV package being removed won't do them
-/sbin/chkconfig --del %{name} >/dev/null 2>&1 || :
-/bin/systemctl try-restart %{name}.service >/dev/null 2>&1 || :
 
 %postun
 %if 0%{?systemd_postun_with_restart:1}
@@ -196,11 +169,14 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %{_libdir}/*.a
 %{_libdir}/*.la
+%{_libdir}/pkgconfig/*.pc
 %{_includedir}/openvswitch/*
 %{_includedir}/openflow/*
 
 %files
 %defattr(-,root,root)
+%{_sysconfdir}/bash_completion.d/ovs-appctl-bashcomp.bash
+%{_sysconfdir}/bash_completion.d/ovs-vsctl-bashcomp.bash
 %dir %{_sysconfdir}/openvswitch
 %config %ghost %{_sysconfdir}/openvswitch/conf.db
 %config %ghost %{_sysconfdir}/openvswitch/system-id.conf
@@ -220,14 +196,14 @@ rm -rf $RPM_BUILD_ROOT
 %config %{_datadir}/openvswitch/vswitch.ovsschema
 %config %{_datadir}/openvswitch/vtep.ovsschema
 %{_bindir}/ovs-appctl
-#%{_bindir}/ovs-docker
+%{_bindir}/ovs-docker
 %{_bindir}/ovs-dpctl
 %{_bindir}/ovs-dpctl-top
 %{_bindir}/ovs-ofctl
 %{_bindir}/ovs-vsctl
 %{_bindir}/ovsdb-client
 %{_bindir}/ovsdb-tool
-#%{_bindir}/ovs-testcontroller
+%{_bindir}/ovs-testcontroller
 %{_bindir}/ovs-pki
 %{_bindir}/vtep-ctl
 %{_sbindir}/ovs-bugtool
@@ -252,9 +228,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/ovs-vsctl.8*
 %{_mandir}/man8/ovs-vswitchd.8*
 %{_mandir}/man8/ovs-parse-backtrace.8*
-#%{_mandir}/man8/ovs-testcontroller.8*
-%doc COPYING DESIGN INSTALL.SSL NOTICE README WHY-OVS
-%doc FAQ NEWS INSTALL.DPDK rhel/README.RHEL
+%{_mandir}/man8/ovs-testcontroller.8*
+%doc COPYING DESIGN.md INSTALL.SSL.md NOTICE README.md WHY-OVS.md
+%doc FAQ.md NEWS INSTALL.DPDK.md rhel/README.RHEL
 /var/lib/openvswitch
 /var/log/openvswitch
 %ghost %attr(755,root,root) %{_localstatedir}/run/openvswitch
@@ -270,5 +246,8 @@ rm -rf $RPM_BUILD_ROOT
 %exclude %{_datadir}/openvswitch/scripts/ovs-save
 
 %changelog
+* Wed Sep 09 2015 John Siegrist <john@complects.com> - 2.4.0-1
+- Updated version to 2.4.0.
+
 * Thu Aug 06 2015 John Siegrist <john@complects.com> - 2.3.2-1
 - Initial fork from Fedora project and import into CloudRouter.
