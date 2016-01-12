@@ -3,12 +3,14 @@
 Summary: Open vSwitch daemon/database/utilities
 Name: openvswitch
 Version: 2.4.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: ASL 2.0 and LGPLv2+ and SISSL
 URL: http://openvswitch.org
 Source0: http://openvswitch.org/releases/%{name}-%{version}.tar.gz
 
 ExcludeArch: ppc
+
+AutoReqProv: no
 
 BuildRequires: autoconf automake libtool
 BuildRequires: systemd-units openssl openssl-devel
@@ -17,7 +19,10 @@ BuildRequires: desktop-file-utils
 BuildRequires: groff graphviz
 BuildRequires: procps-ng
 
-Requires: openssl iproute module-init-tools
+Requires: iproute
+Requires: module-init-tools
+Requires: openssl
+Requires: python
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
@@ -246,6 +251,9 @@ rm -rf $RPM_BUILD_ROOT
 %exclude %{_datadir}/openvswitch/scripts/ovs-save
 
 %changelog
+* Tue Jan 12 2016 John Siegrist <john@complects.com> - 2.4.0-2
+- Disabled AutoReqProv.
+
 * Wed Sep 09 2015 John Siegrist <john@complects.com> - 2.4.0-1
 - Updated version to 2.4.0.
 
