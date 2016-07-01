@@ -2,8 +2,8 @@
 
 Summary: Open vSwitch daemon/database/utilities
 Name: openvswitch
-Version: 2.4.0
-Release: 2%{?dist}
+Version: 2.5.0
+Release: 1%{?dist}
 License: ASL 2.0 and LGPLv2+ and SISSL
 URL: http://openvswitch.org
 Source0: http://openvswitch.org/releases/%{name}-%{version}.tar.gz
@@ -192,14 +192,24 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/openvswitch/scripts/openvswitch.init
 %{_sysconfdir}/sysconfig/network-scripts/ifup-ovs
 %{_sysconfdir}/sysconfig/network-scripts/ifdown-ovs
+%{_datadir}/openvswitch/ovn-nb.ovsschema
+%{_datadir}/openvswitch/ovn-sb.ovsschema
 %{_datadir}/openvswitch/bugtool-plugins/
 %{_datadir}/openvswitch/scripts/ovs-bugtool-*
 %{_datadir}/openvswitch/scripts/ovs-check-dead-ifs
 %{_datadir}/openvswitch/scripts/ovs-lib
 %{_datadir}/openvswitch/scripts/ovs-vtep
 %{_datadir}/openvswitch/scripts/ovs-ctl
+%{_datadir}/openvswitch/scripts/ovn-ctl
 %config %{_datadir}/openvswitch/vswitch.ovsschema
 %config %{_datadir}/openvswitch/vtep.ovsschema
+%{_bindir}/ovn-controller
+%{_bindir}/ovn-controller-vtep
+%{_bindir}/ovn-docker-overlay-driver
+%{_bindir}/ovn-docker-underlay-driver
+%{_bindir}/ovn-nbctl
+%{_bindir}/ovn-sbctl
+%{_bindir}/ovn-northd
 %{_bindir}/ovs-appctl
 %{_bindir}/ovs-docker
 %{_bindir}/ovs-dpctl
@@ -220,8 +230,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/ovsdb-client.1*
 %{_mandir}/man1/ovsdb-server.1*
 %{_mandir}/man1/ovsdb-tool.1*
+%{_mandir}/man5/ovn-nb.5.gz
+%{_mandir}/man5/ovn-sb.5.gz
 %{_mandir}/man5/ovs-vswitchd.conf.db.5*
 %{_mandir}/man5/vtep.5*
+%{_mandir}/man7/ovn-architecture.7.gz
+%{_mandir}/man8/ovn-controller-vtep.8.gz
+%{_mandir}/man8/ovn-controller.8.gz
+%{_mandir}/man8/ovn-ctl.8.gz
+%{_mandir}/man8/ovn-nbctl.8.gz
+%{_mandir}/man8/ovn-northd.8.gz
+%{_mandir}/man8/ovn-sbctl.8.gz
 %{_mandir}/man8/vtep-ctl.8*
 %{_mandir}/man8/ovs-appctl.8*
 %{_mandir}/man8/ovs-bugtool.8*
@@ -251,6 +270,8 @@ rm -rf $RPM_BUILD_ROOT
 %exclude %{_datadir}/openvswitch/scripts/ovs-save
 
 %changelog
+* Fri Jul 01 2016 David Jorm <david.jorm@gmail.com> - 2.5.0-1
+- Upgrade to version 2.5.0 (resolves CVE-2016-2074)
 * Tue Jan 12 2016 John Siegrist <john@complects.com> - 2.4.0-2
 - Disabled AutoReqProv.
 
