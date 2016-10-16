@@ -5,7 +5,7 @@
 %define dpdk_ver 16.07
 
 %define ver 2.6.0
-%define rel 1
+%define rel 2
 #define snapver 13096.gitb55205dd
 
 %define srcver %{ver}%{?snapver:-%{snapver}}
@@ -25,8 +25,7 @@ Summary: Open vSwitch daemon/database/utilities
 # python/compat is Python (although not built into any of the binary packages)
 License: ASL 2.0 and LGPLv2+ and SISSL
 URL: http://openvswitch.org
-#Source0: http://openvswitch.org/releases/%{name}-%{version}%{?snap_gitsha}.tar.gz
-Source0: %{name}-%{srcver}.tar.gz
+Source0: http://openvswitch.org/releases/%{name}-%{version}%{?snap_gitsha}.tar.gz
 
 # snapshot creation script, not used for build itself
 # Source100: ovs-snapshot.sh
@@ -395,6 +394,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_unitdir}/ovn-controller-vtep.service
 
 %changelog
+* Sun Oct 16 2016 John Siegrist <john@complects.com> - 2.6.0-2
+- Fixed incorrect source tarball URL
 * Sun Oct 16 2016 John Siegrist <john@complects.com> - 2.6.0-1
 - Upgrade to version 2.6.0 pulling in changes from the Fedora 24 spec for OVS
 * Fri Jul 01 2016 David Jorm <david.jorm@gmail.com> - 2.5.0-1
